@@ -1,9 +1,14 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 // import data from "../data";
 import { NavLink } from "react-router-dom";
-import "../index.css";
+import "../../index.css"
 import axios from 'axios'
 import logger from 'use-reducer-logger'
+import Product from "../Product";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import LoadingBox from "../LoadingBox";
+import MessageBox from "../MessageBox";
 
 const reducer = (state , action) => {
   switch(action.type) {
@@ -29,7 +34,7 @@ const reducer = (state , action) => {
   }
 }
 
-export default function () {
+ function HomeScreen() {
 
   const [{loading , error , products} , dispatch] = useReducer (logger(reducer) , {
     products:[],
@@ -50,27 +55,27 @@ export default function () {
     fetchData();
   },[])
   return (
-    <div>
       <div>
         <h2 className="heading_1">Featured Products</h2>
-        <div className="products">
+        {
+          loading ? (
+            <LoadingBox />
+          ) : error ? (
+            <MessageBox />
+          ) : (
+            <Row>
           {products.map((product) => (
-            <div key={product.slug} className="product">
-              <NavLink to={`/product/${product.slug}`}>
-                <img src={product.image} alt={product.name} />
-              </NavLink>
-
-              <div className="product_info">
-                <NavLink to={`/product/${product.slug}`}>
-                  <p>{product.name}</p>
-                </NavLink>
-                <p>Price : {product.price}</p>
-                <button className="btn_add"> Add to Cart</button>
-              </div>
-            </div>
+            <Col key = {product.slug}>
+              <Product product={product}></Product>
+            </Col>
           ))}
-        </div>
+          </Row>
+        )}
+          
+
       </div>
-    </div>
+    
   );
 }
+
+export default HomeScreen;
